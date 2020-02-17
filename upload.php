@@ -1,8 +1,8 @@
 <?php
 error_reporting(E_ERROR);
-$tokens = array("alderiscool"); //Tokens go here
+$tokens = array("bemyawa1", "bemyawa2"); //Tokens go here
 $sharexdir = "i/"; //File directory
-$lengthofstring = 12; //Length of file name
+$lengthofstring = 5; //Length of file name
 
 //Random file name generation
 function RandomString($length) {

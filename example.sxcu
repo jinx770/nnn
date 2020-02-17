@@ -1,0 +1,12 @@
+﻿{
+  "Name": "owo",
+  "DestinationType": "ImageUploader, TextUploader, FileUploader",
+  "RequestType": "POST",
+  "RequestURL": "http://alders.site/upload.php",
+  "FileFormName": "sharex",
+  "Arguments": {
+    "secret": "bemyawa1"
+  },
+  "ResponseType": "Text",
+  "URL": "http://alders.site/i/$json:url$"
+}
