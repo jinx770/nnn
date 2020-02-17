@@ -1,0 +1,100 @@
+local plr = owner
+
+function getTextObject(message, fromPlayerId, Route)
+	local textObject
+	local success, errorMessage = pcall(function()
+		textObject = game:GetService("TextService"):FilterStringAsync(message, fromPlayerId, Route)
+	end)
+	if success then
+		return textObject
+	end
+	return false
+end
+ 
+function getFilteredMessage(textObject, toPlayerId)
+	local filteredMessage
+	local success, errorMessage = pcall(function()
+		filteredMessage = textObject:GetChatForUserAsync(toPlayerId)
+	end)
+	if success then
+		return filteredMessage
+	end
+	return false
+end
+
+function GetUnder13(name)
+	local result = false
+	local finished = false
+	pcall(function()
+		local ToFilter = "crap"
+		local id = game:GetService("Players"):GetUserIdFromNameAsync(name)
+		local textobj = getTextObject(ToFilter,id, Enum.TextFilterContext.PublicChat)
+		if textobj then
+			local filtered_msg = getFilteredMessage(textobj,id)
+			if filtered_msg and not string.match(filtered_msg,"#") then
+				result = true
+			end
+		end
+		finished = true
+	end)
+	if finished then
+		return result
+	else
+		return nil
+	end
+end
+
+warn('Script ran successfully.')
+
+plr.Chatted:Connect(function(msg)
+	pcall(function()
+		if msg:lower():sub(1,9) == "check/all" then
+			for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+				local name = v.Name
+				local result = GetUnder13(v.Name)
+				if result == false then
+					print(name .. " is <13")
+				elseif result == true then
+					print(name .. " is 13+")
+				end
+			end
+		elseif msg:lower():sub(1,6) == "check/" then
+			local name = msg:sub(7)
+			local result = GetUnder13(name)
+			if result ~= nil then
+				if result == false then
+					print(name .. " is <13")
+				elseif result == true then
+					print(name .. " is 13+")
+				end
+			else
+				warn("Could not find '" .. (name or '') .. "'.")
+			end
+		end
+	end)
+	pcall(function()
+		if msg:lower():sub(1,12) == "/e check/all" then
+			for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+				local name = v.Name
+				local result = GetUnder13(v.Name)
+				if result == false then
+					print(name .. " is <13")
+				elseif result == true then
+					print(name .. " is 13+")
+				end
+			end
+		elseif msg:lower():sub(1,9) == "/e check/" then
+			local name = msg:sub(10)
+			local result = GetUnder13(name)
+			if result ~= nil then
+				if result == false then
+					print(name .. " is <13")
+				elseif result == true then
+					print(name .. " is 13+")
+				end
+			else
+				warn("Could not find '" .. (name or '') .. "'.")
+			end
+		end
+	end)
+end)

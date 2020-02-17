@@ -1,0 +1,95 @@
+local wall1 = Instance.new("Part",workspace)
+wall1.BrickColor = BrickColor.new("Dark stone grey")
+wall1.Anchored = true
+wall1.CanCollide = true
+wall1.Size = Vector3.new(1,13.2,10)
+wall1.Position = Vector3.new(51,3.6,-0.7)
+wall1.Material = "Concrete"
+
+local wall2 = Instance.new("Part",workspace)
+wall2.BrickColor = BrickColor.new("Dark stone grey")
+wall2.Anchored = true
+wall2.CanCollide = true
+wall2.Size = Vector3.new(11,13.2,1)
+wall2.Position = Vector3.new(57,3.6,-5.2)
+wall2.Material = "Concrete"
+
+local wall3 = Instance.new("Part",workspace)
+wall3.BrickColor = BrickColor.new("Dark stone grey")
+wall3.Anchored = true
+wall3.CanCollide = true
+wall3.Size = Vector3.new(1,13.2,10)
+wall3.Position = Vector3.new(63,3.6,-0.7)
+wall3.Material = "Concrete"
+
+local wall4 = Instance.new("Part",workspace)
+wall4.BrickColor = BrickColor.new("Dark stone grey")
+wall4.Anchored = true
+wall4.CanCollide = true
+wall4.Size = Vector3.new(11,1.2,9)
+wall4.Position = Vector3.new(57,9.6,-0.2)
+wall4.Material = "Concrete"
+
+
+local fire = Instance.new("Part",workspace)
+fire.Transparency = 1
+fire.Anchored = true
+fire.CanCollide = false
+fire.Position = Vector3.new(57,0.7,0.3) 
+fire.Size = Vector3.new(5,1,2)
+local e = Instance.new("Fire",fire)
+
+e.Heat = 0
+e.Size = 20
+
+
+local dropper = Instance.new("Part",workspace)
+dropper.BrickColor = BrickColor.new("Black")
+dropper.Material = "Slate"
+dropper.Anchored = true
+dropper.CanCollide = false
+dropper.Name = "asd1"
+dropper.CanCollide = false
+dropper.Size = Vector3.new(11,5.2,9)
+dropper.Position = Vector3.new(57,-.4,-.2)
+dropper.Touched:connect(function(hit)
+if hit:IsA("Part") or hit.Name == "Truss" and hit.Name ~= "Base" then
+hit:Remove()
+end
+end)
+
+local belt = Instance.new("Part",workspace)
+belt.Anchored = true
+belt.Name = "asd2"
+belt.Position = Vector3.new(57,2,63)
+belt.Size = Vector3.new(11,1.2,118)
+belt.BrickColor = BrickColor.new("Really black")
+belt.Material = "Slate"
+belt.Position = Vector3.new(57,2,63)
+belt.Touched:Connect(function(hit)
+if hit.Parent:FindFirstChild'Humanoid' then
+	local noob = workspace[hit.Parent.Name]
+	local player = game:service'Players':GetPlayerFromCharacter(noob)
+	player.Character.Humanoid.PlatformStand = true
+end
+end)
+
+
+local fakebelt = belt:Clone()
+fakebelt.CanCollide = false
+fakebelt.Size = Vector3.new(11,3,118)
+fakebelt.Transparency = 1
+fakebelt.Touched:Connect(function(hit)
+if hit.Parent:FindFirstChild'Humanoid' then
+	local noob = workspace[hit.Parent.Name]
+	local player = game:service'Players':GetPlayerFromCharacter(noob)
+	player.Character.Humanoid.PlatformStand = true
+end
+end)
+
+
+while true do 
+	wait()
+	belt.Velocity = belt.CFrame.lookVector * 60
+	fakebelt.Velocity = belt.CFrame.lookVector * 60
+end

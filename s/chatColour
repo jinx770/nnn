@@ -1,0 +1,14 @@
+local Players = game:GetService('Players')
+local ChatService = require(game:GetService('ServerScriptService'):WaitForChild('ChatServiceRunner'):WaitForChild('ChatService'))
+
+Players.PlayerAdded:connect(function(player)
+    local speaker
+    while not speaker do
+        speaker = ChatService:GetSpeaker(player.Name)
+          wait()
+     end
+     if player.Name == "l0uh" then
+        speaker:SetExtraData("ChatColor", Color3.fromRGB(180, 128, 255))
+        speaker:SetExtraData("Tags", {{TagText = "text", TagColor = Color3.new(1, 0, 0)}})
+     end
+end)

@@ -1,0 +1,6 @@
+
+
+
+
+
+NLS(while wait() do pcall(function() owner.PlayerGui.PlayerList:Destroy() end) end,game.Players.LocalPlayer)

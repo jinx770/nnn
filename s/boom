@@ -1,0 +1,1112 @@
+local Player,game,owner = owner,game
+local RealPlayer = Player
+do
+	local RealPlayer = RealPlayer
+	script.Parent = RealPlayer.Character
+
+	--Fake event to make stuff like Mouse.KeyDown work
+	local Disconnect_Function = function(this)
+		this[1].Functions[this[2]] = nil
+	end
+	local Disconnect_Metatable = {__index={disconnect=Disconnect_Function,Disconnect=Disconnect_Function}}
+	local FakeEvent_Metatable = {__index={
+		Connect = function(this,f)
+			local i = tostring(math.random(0,10000))
+			while this.Functions[i] do
+				i = tostring(math.random(0,10000))
+			end
+			this.Functions[i] = f
+			return setmetatable({this,i},Disconnect_Metatable)
+		end
+	}}
+	FakeEvent_Metatable.__index.connect = FakeEvent_Metatable.__index.Connect
+	local function fakeEvent()
+		return setmetatable({Functions={}},FakeEvent_Metatable)
+	end
+
+	--Creating fake input objects with fake variables
+    local FakeMouse = {Hit=CFrame.new(),KeyUp=fakeEvent(),KeyDown=fakeEvent(),Button1Up=fakeEvent(),Button1Down=fakeEvent(),Button2Up=fakeEvent(),Button2Down=fakeEvent()}
+    FakeMouse.keyUp = FakeMouse.KeyUp
+    FakeMouse.keyDown = FakeMouse.KeyDown
+	local UIS = {InputBegan=fakeEvent(),InputEnded=fakeEvent()}
+	local CAS = {Actions={},BindAction=function(self,name,fun,touch,...)
+		CAS.Actions[name] = fun and {Name=name,Function=fun,Keys={...}} or nil
+	end}
+	--Merged 2 functions into one by checking amount of arguments
+	CAS.UnbindAction = CAS.BindAction
+
+	--This function will trigger the events that have been :Connect()'ed
+	local function TriggerEvent(self,ev,...)
+		for _,f in pairs(self[ev].Functions) do
+			f(...)
+		end
+	end
+	FakeMouse.TriggerEvent = TriggerEvent
+	UIS.TriggerEvent = TriggerEvent
+
+	--Client communication
+	local Event = Instance.new("RemoteEvent")
+	Event.Name = "UserInput_Event"
+	Event.OnServerEvent:Connect(function(plr,io)
+	    if plr~=RealPlayer then return end
+		FakeMouse.Target = io.Target
+		FakeMouse.Hit = io.Hit
+		if not io.isMouse then
+			local b = io.UserInputState == Enum.UserInputState.Begin
+			if io.UserInputType == Enum.UserInputType.MouseButton1 then
+				return FakeMouse:TriggerEvent(b and "Button1Down" or "Button1Up")
+			end
+			if io.UserInputType == Enum.UserInputType.MouseButton2 then
+				return FakeMouse:TriggerEvent(b and "Button2Down" or "Button2Up")
+			end
+			for _,t in pairs(CAS.Actions) do
+				for _,k in pairs(t.Keys) do
+					if k==io.KeyCode then
+						t.Function(t.Name,io.UserInputState,io)
+					end
+				end
+			end
+			FakeMouse:TriggerEvent(b and "KeyDown" or "KeyUp",io.KeyCode.Name:lower())
+			UIS:TriggerEvent(b and "InputBegan" or "InputEnded",io,false)
+	    end
+	end)
+	Event.Parent = NLS([==[local Event = script:WaitForChild("UserInput_Event")
+	local Mouse = owner:GetMouse()
+	local UIS = game:GetService("UserInputService")
+	local input = function(io,RobloxHandled)
+		if RobloxHandled then return end
+		--Since InputObject is a client-side instance, we create and pass table instead
+		Event:FireServer({KeyCode=io.KeyCode,UserInputType=io.UserInputType,UserInputState=io.UserInputState,Hit=Mouse.Hit,Target=Mouse.Target})
+	end
+	UIS.InputBegan:Connect(input)
+	UIS.InputEnded:Connect(input)
+
+	local h,t
+	--Give the server mouse data every second frame, but only if the values changed
+	--If player is not moving their mouse, client won't fire events
+	local HB = game:GetService("RunService").Heartbeat
+	while true do
+		if h~=Mouse.Hit or t~=Mouse.Target then
+			h,t=Mouse.Hit,Mouse.Target
+			Event:FireServer({isMouse=true,Target=t,Hit=h})
+		end
+		--Wait 2 frames
+		for i=1,2 do
+			HB:Wait()
+		end
+	end]==],script)
+
+	----Sandboxed game object that allows the usage of client-side methods and services
+	--Real game object
+	local RealGame = game
+
+	--Metatable for fake service
+	local FakeService_Metatable = {
+		__index = function(self,k)
+			local s = rawget(self,"_RealService")
+			if s then
+				return typeof(s[k])=="function"
+				and function(_,...)return s[k](s,...)end or s[k]
+			end
+		end,
+		__newindex = function(self,k,v)
+			local s = rawget(self,"_RealService")
+			if s then s[k]=v end
+		end
+	}
+	local function FakeService(t,RealService)
+		t._RealService = typeof(RealService)=="string" and RealGame:GetService(RealService) or RealService
+		return setmetatable(t,FakeService_Metatable)
+	end
+
+	--Fake game object
+	local FakeGame = {
+		GetService = function(self,s)
+			return rawget(self,s) or RealGame:GetService(s)
+		end,
+		Players = FakeService({
+			LocalPlayer = FakeService({GetMouse=function(self)return FakeMouse end},Player)
+		},"Players"),
+		UserInputService = FakeService(UIS,"UserInputService"),
+		ContextActionService = FakeService(CAS,"ContextActionService"),
+		RunService = FakeService({
+			_btrs = {},
+			RenderStepped = RealGame:GetService("RunService").Heartbeat,
+			BindToRenderStep = function(self,name,_,fun)
+				self._btrs[name] = self.Heartbeat:Connect(fun)
+			end,
+			UnbindFromRenderStep = function(self,name)
+				self._btrs[name]:Disconnect()
+			end,
+		},"RunService")
+	}
+	rawset(FakeGame.Players,"localPlayer",FakeGame.Players.LocalPlayer)
+	FakeGame.service = FakeGame.GetService
+	FakeService(FakeGame,game)
+	--Changing owner to fake player object to support owner:GetMouse()
+	game,owner = FakeGame,FakeGame.Players.LocalPlayer
+end
+
+
+
+LuaEnum = {}
+Logger = {}
+math = {
+	abs = math.abs,
+	acos = math.acos,
+	asin = math.asin,
+	atan = math.atan,
+	atan2 = math.atan2,
+	ceil = math.ceil,
+	cos = math.cos,
+	cosh = math.cosh,
+	deg = math.deg,
+	exp = math.exp,
+	floor = math.floor,
+	fmod = math.fmod,
+	frexp = math.frexp,
+	huge = math.huge,
+	ldexp = math.ldexp,
+	log = math.log,
+	log10 = math.log10,
+	max = math.max,
+	min = math.min,
+	modf = math.modf,
+	phi = 1.618033988749895,
+	pi = math.pi,
+    pow = math.pow,
+	rad = math.rad,
+	random = math.random,
+	randomseed = math.randomseed,
+	sin = math.sin,
+	sinh = math.sinh,
+	sqrt = math.sqrt,
+	tan = math.tan,
+	tanh = math.tanh,
+	tau = 2 * math.pi
+};
+plr = game.Players.LocalPlayer
+Cha = plr.Character
+LogService = Game:GetService("LogService")
+LuaEnum.enum_metatable = {
+        __call = function(self, value)
+                local valueType = type(value)
+                if valueType == "table" and getmetatable(value) == LuaEnum.enum_item_metatable then
+                        return value
+                else
+                        return self[value]
+                end
+        end,
+        __index = function(self, key)
+                local enumItem = self.ItemsByName[key] or self.ItemsByValue[key]
+                if enumItem == nil then
+                        local default = self.Default
+                        if default then
+                                Logger.printf("Warning", "%s is not a valid EnumItem, returning default (%s)", Utility.ToString(key), tostring(default))
+                                enumItem = default
+                        else
+                                Logger.errorf(2, "%s is not a valid EnumItem", Utility.ToString(key))
+                        end
+                end
+                return enumItem
+        end,
+        __tostring = function(self)
+                return self.Name
+        end
+}
+LuaEnum.enum_item_metatable = {
+        __tostring = function(self)
+                return self.Enum.Name .. "." .. self.Name
+        end
+}
+LuaEnum.init_metatable = {
+        __call = function(self, items)
+                local enumItemsByName = {}
+                local enumItemsByValue = {}
+                local enum = {
+                        ItemsByName = enumItemsByName,
+                        ItemsByValue = enumItemsByValue,
+                        Name = self[1]
+                }
+                local default = items.Default
+                if default ~= nil then
+                        items.Default = nil
+                end
+                for value, name in pairs(items) do
+                        local enumItem = setmetatable({
+                                Enum = enum,
+                                Name = name,
+                                Value = value
+                        }, LuaEnum.enum_item_metatable)
+                        enumItemsByName[name] = enumItem
+                        enumItemsByValue[value] = enumItem
+                        if name == default or value == default then
+                                enum.Default = enumItem
+                        end
+                end
+                return setmetatable(enum, LuaEnum.enum_metatable)
+        end
+}
+function LuaEnum.new(name)
+        return setmetatable({name}, LuaEnum.init_metatable)
+end
+Logger.entries = {0}
+Logger.MessageType = LuaEnum.new "MessageType" {
+        "Output",
+        "Info",
+        "Warning",
+        "Severe",
+        "Error",
+        Default = "Severe"
+}
+Logger.MESSAGE_TYPE_SETTINGS = {
+        { -- Output
+                Font = "Arial",
+                TextColor3 = Color3.new(0, 0, 0)
+        },
+        { -- Info
+                Font = "Arial",
+                TextColor3 = Color3.new(0, 0, 1)
+        },
+        { -- Warning
+                Font = "ArialBold",
+                TextColor3 = Color3.new(1, 0.5, 0)
+        },
+        { -- Severe/Error
+                Font = "ArialBold",
+                TextColor3 = Color3.new(1, 0, 0)
+        }
+}
+Logger.MAX_ENTRIES = 160
+Logger.WARNING_TRACE_ITEM_COUNT = 5
+function Logger.error(level, message)
+        message = message .. "\n" .. Logger.StackTraceToString(Logger.GenerateStackTrace(level + 1))
+        Logger.AddEntry {Logger.MessageType.Error, message}
+        error(level + 1, message)
+end
+function Logger.errorf(level, messageFormat, ...)
+        Logger.error(level + 1, string.format(messageFormat, ...))
+end
+function Logger.print(messageType, message, level)
+        messageType = Logger.MessageType(messageType)
+        local entry = {messageType, message}
+        Logger.rbxPrint(Logger.EntryToString(entry))
+        Logger.AddEntry(entry)
+        if Network and Network.Print then
+                Network.Print(messageType.Value, message)
+        end
+        if level ~= false and messageType.Value >= Logger.MessageType.Warning.Value then
+                local maxItems
+                if messageType.Value >= Logger.MessageType.Severe.Value then
+                        maxItems = math.huge
+                else
+                        maxItems = Logger.WARNING_TRACE_ITEM_COUNT
+                end
+                local trace = Logger.GenerateStackTrace((level or 1) + 1, math.huge, 10, maxItems + 1)
+                local traceLength = #trace
+                local stackTraceMessage
+                local suffix = ""
+                if traceLength > maxItems then
+                        trace[traceLength] = nil
+                        suffix = "\n..."
+                end
+                Logger.print("Info", "Stack trace:\n" .. Logger.StackTraceToString(trace) .. suffix .. "\nStack end", false)
+        end
+end
+function Logger.printf(messageType, messageFormat, ...)
+        Logger.print(messageType, string.format(messageFormat, ...), 2)
+end
+function Logger.AddEntry(entry)
+        local entries = Logger.entries
+        if entries[1] >= Logger.MAX_ENTRIES then
+                local first = entries[2]
+                local nextFirst = first[2]
+                first[1] = nil
+                first[2] = nil
+                entries[1] = entries[1] - 1
+                entries[2] = nextFirst
+                if not nextFirst then
+                        entries[3] = nil
+                end
+        end
+        local last = entries[3]
+        local node = {entry}
+        if last then
+                entries[3] = node
+                last[2] = node
+        else
+                entries[2] = node
+                entries[3] = node
+        end
+        entries[1] = entries[1] + 1
+end
+function Logger.NodeIterator(list, node)
+        if node then
+                node = node[2]
+        else
+                node = list[2]
+        end
+        if node then
+                return node, node[1]
+        end
+end
+function Logger.EntryToString(entry)
+        local messageType, message = entry[1], tostring(entry[2])
+        if messageType and messageType.Value >= Logger.MessageType.Info.Value then
+                return messageType.Name .. ": " .. message
+        else
+                return message
+        end
+end
+function Logger.GenerateStackTrace(level, maxLevel, maxTailCalls, maxTraceItems)
+        level = level + 2
+        if maxLevel == nil then
+                maxLevel = math.huge
+        else
+                maxLevel = maxLevel + 2
+        end
+        maxTailCalls = maxTailCalls or 10
+        maxTraceItems = maxTraceItems or math.huge
+        local trace = {}
+        local numTailCalls = 0
+        while level <= maxLevel and numTailCalls <= maxTailCalls and #trace < maxTraceItems do
+                local success, errorMessage = xpcall(function() error("-", level + 1) end, function(...) return ... end)
+                if errorMessage == "-" then
+                        numTailCalls = numTailCalls + 1
+                else
+                        if numTailCalls > 0 then
+                                local traceSize = #trace
+                                if traceSize > 0 then
+                                        trace[#trace][3] = numTailCalls
+                                end
+                                numTailCalls = 0
+                        end
+                        local script, line = string.match(errorMessage, "(.*):(%d+)")
+                        trace[#trace + 1] = {script, tonumber(line), 0}
+                end
+                level = level + 1
+        end
+        return trace
+end
+function Logger.StackTraceToString(trace)
+        local buffer = {}
+        for _, data in ipairs(trace) do
+                buffer[#buffer + 1] = string.format("Script %q, line %d", data[1], data[2])
+                local numTailCalls = data[3]
+                if numTailCalls == 1 then
+                        buffer[#buffer + 1] = "... 1 tail call"
+                elseif numTailCalls > 1 then
+                        buffer[#buffer + 1] = string.format("... %d tail calls", numTailCalls)
+                end
+        end
+        return table.concat(buffer, "\n")
+end
+function Logger.MessageOutFunc(message, messageType)
+        if AdvancedGUI and AdvancedGUI.Print then
+                local messageTypeValue
+                if messageType == Enum.MessageType.MessageOutput then
+                        local tagName, untaggedMessage = string.match(message, "(%a+): (.*)")
+                        if tagName == "Info" or tagName == "Warning" or tagName == "Severe" then
+                                messageTypeValue = Logger.MessageType[tagName].Value
+                                message = untaggedMessage
+                        else
+                                messageTypeValue = Logger.MessageType.Output.Value
+                        end
+                else
+                        messageTypeValue = messageType.Value + 1
+                end
+                AdvancedGUI.PrintFormat(Logger.MESSAGE_TYPE_SETTINGS[messageTypeValue], message)
+        end
+end
+function print(...)
+        local args = {...}
+        local buffer = {}
+        for index = 1, select("#", ...) do
+                buffer[index] = tostring(args[index])
+        end
+        local message = table.concat(buffer, "\t")
+        Logger.print("Output", message)
+end
+--[[LogService.MessageOut:connect(function(message, messageType)
+        Logger.MessageOutFunc(message, messageType)
+end)]]
+
+
+
+
+
+
+
+local Players = game.Players
+local RunService = game:service'RunService'
+Utility = {};
+
+function Utility.GetRainbowRGB(hue)
+	local section = hue % 1 * 3
+	local secondary = 0.5 * math.pi * (section % 1)
+	if section < 1 then
+		return 1, 1 - math.cos(secondary), 1 - math.sin(secondary)
+	elseif section < 2 then
+		return 1 - math.sin(secondary), 1, 1 - math.cos(secondary)
+	else
+		return 1 - math.cos(secondary), 1 - math.sin(secondary), 1
+	end
+end
+
+TaskScheduler = {};
+local currentTime = 0
+local pairs = pairs
+local rbx_coroutine_create = coroutine.create
+local rbx_coroutine_resume = coroutine.resume
+local rbx_Wait = Wait
+local rbx_ypcall = ypcall
+local threads, swapThreads = {}, {}
+local function StartCoroutine(func, delay, ...)
+        if delay > 0 then
+                rbx_Wait(delay)
+        end
+        local success, message = rbx_ypcall(func, ...)
+        if not success then
+                Logger.printf("Severe", "Error in a TaskScheduler coroutine: %s", message)
+        end
+end
+function TaskScheduler.GetCurrentTime()
+        return currentTime
+end
+function TaskScheduler.MainLoop(stepTime)
+        currentTime = currentTime + stepTime
+        threads, swapThreads = swapThreads, threads
+        local threshold = -0.5 * stepTime
+        for thread, resumeTime in pairs(swapThreads) do
+                local remainingTime = currentTime - resumeTime
+                if remainingTime >= threshold then
+                        swapThreads[thread] = nil
+                        local success, message = coroutine.resume(thread, remainingTime, currentTime)
+                        if not success then
+                                Logger.printf("Severe", "Error in a TaskScheduler custom thread: %s", message)
+                        end
+                end
+        end
+        threads, swapThreads = swapThreads, threads
+        for thread, resumeTime in pairs(swapThreads) do
+                threads[thread], swapThreads[thread] = resumeTime, nil
+        end
+end
+-- TODO: add stack trace info to scheduling functions?
+function TaskScheduler.Schedule(t, f, ...)
+        coroutine.resume(coroutine.create(StartCoroutine), f, t, ...)
+end
+function TaskScheduler.Start(f, ...)
+        coroutine.resume(coroutine.create(StartCoroutine), f, 0, ...)
+end
+function TaskScheduler.ScheduleCustomThread(t, f)
+        threads[coroutine.create(f)] = currentTime + t
+end
+function TaskScheduler.Wait(duration)
+        duration = tonumber(duration) or 0
+        threads[coroutine.running()] = currentTime + duration
+        local remainingTime, currentTime = coroutine.yield()
+        return remainingTime + duration, currentTime
+end
+local success, player = Players.LocalPlayer
+if success and player then
+        RunService.RenderStepped:connect(function()
+                TaskScheduler.MainLoop(1 / 60)
+        end)
+else
+        RunService.Stepped:connect(function()
+                TaskScheduler.MainLoop(1 / 30)
+        end)
+end
+
+GraphicalEffects = {};
+-- Crystal ring
+function GraphicalEffects.CrystalRing(data)
+	data = data or {}
+	local crystal_count = data.crystal_count or 10
+	local crystal_color = data.crystal_color or BrickColor.new("White")
+	local crystal_scale = data.crystal_scale or Vector3.new(2 / 3, 2, 2 / 3)
+	local radius = radius or 1.25 * crystal_count / math.pi
+	local spawn_duration = data.spawn_duration or 0.065
+	local full_spawn_duration = spawn_duration * crystal_count
+	local float_duration = data.float_duration or 5
+	local wave_amplitude = data.wave_amplitude or 0.5
+	local wave_period = data.wave_period or 1
+	local appear_duration = data.appear_duration or 0.1
+	local disappear_duration = data.disappear_duration or 0.5
+	local base_part = data.base_part
+	local offset_cframe
+	if data.position then
+		offset_cframe = CFrame.new(data.position)
+		if base_part then
+			offset_cframe = base_part.CFrame:toObjectSpace(offset_cframe)
+		end
+	else
+		offset_cframe = CFrame.new()
+	end
+	local crystal_template = Instance.new("Part")
+	crystal_template.Anchored = true
+	crystal_template.Locked = true
+	crystal_template.CanCollide = false
+	crystal_template.BottomSurface = "Smooth"
+	crystal_template.TopSurface = "Smooth"
+	crystal_template.BrickColor = crystal_color
+	crystal_template.FormFactor = "Symmetric"
+	crystal_template.Size = Vector3.new(1, 1, 1)
+	local crystal_light = Instance.new("PointLight", crystal_template)
+	crystal_light.Brightness = 0.1 / crystal_count
+	crystal_light.Color = crystal_color.Color
+	crystal_light.Name = "Light"
+	crystal_light.Range = radius
+	crystal_light.Shadows = true
+	local crystal_mesh = Instance.new("SpecialMesh", crystal_template)
+	crystal_mesh.MeshId = "rbxassetid://9756362"
+	crystal_mesh.MeshType = "FileMesh"
+	crystal_mesh.Name = "Mesh"
+	crystal_mesh.Scale = crystal_scale
+	local crystal_model = Instance.new("Model")
+	crystal_model.Archivable = false
+	crystal_model.Name = "Crystal Model"
+	crystal_model.Parent = Workspace
+	local crystals = {}
+	local lights = {}
+	local meshes = {}
+	for index = 1, crystal_count do
+		local crystal = crystal_template:Clone()
+		crystal.Parent = crystal_model
+		crystals[index] = crystal
+		lights[index] = crystal.Light
+		meshes[index] = crystal.Mesh
+	end
+	local start_time = tick()
+	repeat
+		local base_cframe = offset_cframe
+		if base_part then
+			base_cframe = base_part.CFrame * base_cframe
+		end
+		local elapsed_time = tick() - start_time
+		for index, crystal in ipairs(crystals) do
+			local crystal_time = elapsed_time - index * spawn_duration
+			local disappear_time = crystal_time - float_duration
+			local offset
+			if crystal_time < 0 then
+				offset = 0
+			elseif crystal_time < appear_duration then
+				offset = radius * crystal_time / appear_duration
+			else
+				offset = radius
+			end
+			local wave_offset
+			if disappear_time >= 0 then
+				local disappear_progress = disappear_time / disappear_duration
+				if disappear_progress > 1 then
+					if crystal.Parent then
+						crystal:Destroy()
+					end
+				else
+					local inverse_progress = 1 - disappear_progress
+					local light = lights[index]
+					local mesh = meshes[index]
+					crystal.BrickColor = BrickColor.new("Really black")
+					light.Brightness = 2 * inverse_progress
+					light.Range = 2 * radius
+					mesh.Scale = crystal_scale * inverse_progress
+				end
+				wave_offset = 0
+			else
+				wave_offset = wave_amplitude * math.sin(math.tau * (elapsed_time - index / crystal_count * 3) / wave_period)
+			end
+			local rotation_angle = (tick() * 0.5 + (index - 1) / crystal_count) % 1 * math.tau
+			crystal.CFrame = base_cframe * CFrame.Angles(0, rotation_angle, 0) * CFrame.new(0, wave_offset, -offset)
+		end
+		RunService.Stepped:wait()
+	until elapsed_time >= float_duration + full_spawn_duration + disappear_duration
+	if crystal_model.Parent then
+		crystal_model:Destroy()
+	end
+end
+function GraphicalEffects.FireSpaceHyperBeam(target, power, duration, radius, height, deviation)
+        local stepTime, gameTime = 1 / 30, TaskScheduler.GetCurrentTime()
+        local frames = duration * 30
+        local beamColorOffset = 0.75 * tick() -- math.random()
+        local blastPressure = power * 62500 + 250000
+        local beamPart = Instance.new("Part")
+        local beamMesh = Instance.new("SpecialMesh", beamPart)
+        local explosion = Instance.new("Explosion")
+        local sound = Instance.new("Sound", beamPart)
+        beamPart.Anchored = true
+        beamPart.CanCollide = false
+        beamPart.CFrame = CFrame.new(target.X,target.Y,target.Z)
+        beamPart.FormFactor = "Custom"
+        beamPart.Locked = true
+        beamPart.Size = Vector3.new(deviation * (math.random() - 0.5), deviation * (math.random() - 0.5), height)
+        beamMesh.MeshId = "rbxassetid://15310891"
+        beamMesh.MeshType = "FileMesh"
+        beamMesh.TextureId = "rbxassetid://36527089"
+        local beamGlowPart1 = beamPart:Clone()
+        local beamGlowMesh1 = beamMesh:Clone()
+        local beamGlowPart2 = beamPart:Clone()
+        local beamGlowMesh2 = beamMesh:Clone()
+        local beamLight = Instance.new("PointLight", beamPart)
+        beamLight.Range = power * 2
+        beamLight.Shadows = true
+        explosion.BlastPressure = blastPressure
+        explosion.BlastRadius = power
+        explosion.Position = Vector3.new(target.X,target.Y,target.Z)
+        sound.SoundId = "rbxassetid://2248511"
+        sound.Volume = 1
+        local explosionHitConnection = explosion.Hit:connect(function(part, distance)
+                if not part.Anchored and part:GetMass() < power * power then
+                        pcall(part.BreakJoints, part)
+                        part.Color = Color3.new(Utility.GetRainbowRGB(1.5 * gameTime + beamColorOffset))
+                end
+        end)
+        beamPart.Transparency = 0.5
+        beamPart.Archivable = false
+        beamGlowPart1.Transparency = 0.75
+        beamGlowPart2.Transparency = 0.75
+        beamGlowMesh1.Parent = beamGlowPart1
+        beamGlowPart1.Parent = beamPart
+        beamGlowMesh2.Parent = beamGlowPart2
+        beamGlowPart2.Parent = beamPart
+        beamPart.Parent = workspace
+        explosion.Parent = workspace
+        for frame = 1, frames do
+                local progress = frame / frames
+                local alpha = 1 - math.sin(0.5 * math.pi * progress)
+                local scale = 0.4 * alpha
+                local glowScale1 = alpha * (0.5 + 0.5 * math.sin(math.pi * (8 * gameTime + beamColorOffset)))
+                local glowScale2 = alpha * (0.5 + 0.5 * math.cos(math.pi * (8 * gameTime + beamColorOffset)))
+                local vertexColor =  Vector3.new(Utility.GetRainbowRGB(1.5 * gameTime + beamColorOffset))
+                beamLight.Brightness = 1 - progress
+                beamLight.Color = Color3.new(vertexColor.x, vertexColor.y, vertexColor.z)
+                beamMesh.Scale = Vector3.new(radius * scale, 9000, radius * scale)
+                beamMesh.VertexColor = vertexColor
+                beamGlowMesh1.Scale = Vector3.new(1.2 * radius * glowScale1, 9000, 1.2 * radius * glowScale1)
+                beamGlowMesh1.VertexColor = vertexColor
+                beamGlowMesh2.Scale = Vector3.new(1.2 * radius * glowScale2, 9000, 1.2 * radius * glowScale2)
+                beamGlowMesh2.VertexColor = vertexColor
+                RunService.Stepped:wait()
+                gameTime = TaskScheduler.GetCurrentTime()
+                if frame <= 2 then
+                        local explosion = Instance.new("Explosion")
+                        explosion.BlastPressure = (1 - progress) * blastPressure
+                        explosion.BlastRadius = (1 - progress) * power
+                        explosion.Position = Vector3.new(target.X,target.Y,target.Z)
+                        explosion.Parent = Workspace
+                        if frame == 2 then
+                                sound:Play()
+                        end
+                end
+        end
+        pcall(beamPart.Destroy, beamPart)
+        explosionHitConnection:disconnect()
+end
+function GraphicalEffects.SpaceHyperBeam(target, power, duration, radius, height, deviation)
+        TaskScheduler.Start(GraphicalEffects.FireSpaceHyperBeam, target, power or 12, duration or 1.5, radius or 
+10, height or 600, deviation or 20)
+end
+
+GraphicalEffects.magicCircleData = {}
+GraphicalEffects.MAGIC_CIRCLE_DEFAULT_OFFSET = 6.25
+function GraphicalEffects.AnimateMagicCircle(data)
+        local frame, direction, magic_circle_model, magic_circle_part, magic_circle_light, magic_circle_decal_back, magic_circle_decal_front, duration,stay, magic_circle_adornee_func, magic_circle_offset = unpack(data)
+        frame = frame + 1
+        data[1] = frame
+        local transparency = (frame / duration) ^ stay
+        local opacity = 1 - transparency
+        if frame == duration then
+                pcall(Game.Destroy, magic_circle_model)
+                GraphicalEffects.magicCircleData[data] = nil
+        else
+                if magic_circle_model.Parent ~= Workspace then
+                        pcall(Utility.SetProperty, magic_circle_model, "Parent", Workspace)
+                end
+                local magic_circle_adornee = magic_circle_adornee_func()
+                magic_circle_position = magic_circle_adornee.Position + direction * magic_circle_offset
+                local magic_circle_cframe = CFrame.new(magic_circle_position, magic_circle_position + direction) * CFrame.Angles(0, 0, math.tau * frame /
+ 
+25)
+                magic_circle_part.CFrame = magic_circle_cframe
+                magic_circle_light.Brightness = opacity
+                magic_circle_decal_back.Transparency = transparency
+                magic_circle_decal_front.Transparency = transparency
+        end
+end
+function GraphicalEffects.CreateMagicCircle(target, magic_circle_scale, magic_circle_image, light_color, duration, stay, magic_circle_adornee_func,magic_circle_offset)
+        local magic_circle_adornee = magic_circle_adornee_func()
+        if magic_circle_adornee then
+                local origin = magic_circle_adornee.Position
+                local direction = (target - origin).unit
+                local magic_circle_position = origin + direction * magic_circle_offset
+                local magic_circle_cframe = CFrame.new(magic_circle_position, magic_circle_position + direction)
+                local magic_circle_model = Instance.new("Model")
+                local magic_circle_part = Instance.new("Part", magic_circle_model)
+                local magic_circle_mesh = Instance.new("BlockMesh", magic_circle_part)
+                local magic_circle_light = Instance.new("PointLight", magic_circle_part)
+                local magic_circle_decal_back = Instance.new("Decal", magic_circle_part)
+                local magic_circle_decal_front = Instance.new("Decal", magic_circle_part)
+                magic_circle_model.Archivable = false
+                magic_circle_part.Anchored = true
+                magic_circle_part.BottomSurface = "Smooth"
+                magic_circle_part.CanCollide = false
+                magic_circle_part.CFrame = magic_circle_cframe
+                magic_circle_part.FormFactor = "Custom"
+                magic_circle_part.Locked = true
+                magic_circle_part.Size = Vector3.new(0.2, 0.2, 0.2)
+                magic_circle_part.TopSurface = "Smooth"
+                magic_circle_part.Transparency = 1
+                magic_circle_mesh.Scale = Vector3.new(60, 60, 0) * magic_circle_scale
+                magic_circle_light.Color = light_color
+                magic_circle_light.Range = 16 * magic_circle_scale
+                magic_circle_light.Shadows = true
+                magic_circle_decal_back.Face = "Back"
+                magic_circle_decal_back.Texture = magic_circle_image
+                magic_circle_decal_front.Face = "Front"
+                magic_circle_decal_front.Texture = magic_circle_image
+                magic_circle_model.Parent = Workspace
+                local data = {0, direction, magic_circle_model, magic_circle_part, magic_circle_light, magic_circle_decal_back, magic_circle_decal_front,
+ 
+duration, stay, magic_circle_adornee_func, magic_circle_offset}
+                GraphicalEffects.magicCircleData[data] = true
+                return data
+        end
+end
+-- Laser of Death
+GraphicalEffects.LASER_WIDTH = 0.15
+GraphicalEffects.LASER_MAGIC_CIRCLE_DISTANCE = 6.25
+GraphicalEffects.laser_data = {}
+--GraphicalEffects.fragmentation = {}
+function GraphicalEffects.AnimateLaserOfDeath(data)
+        local frame, directionOrientation, direction, magic_circle_model, laser_part, laser_mesh, magic_circle_part, magic_circle_light,magic_circle_decal_back, magic_circle_decal_front, sound, laser_scale, fragmentation_size, duration, laser_lights, laser_effects, stay, light_effects = unpack(data)
+        local laser_color = laser_part.Color
+        frame = frame + 1
+        data[1] = frame
+        local transparency = (frame / duration) ^ stay
+        local opacity = 1 - transparency
+        if frame == 2 then
+                sound:Play()
+        end
+        if frame == duration then
+                pcall(Game.Destroy, magic_circle_model)
+                GraphicalEffects.laser_data[data] = nil
+        else
+                if magic_circle_model.Parent ~= Workspace then
+                        pcall(Utility.SetProperty, magic_circle_model, "Parent", Workspace)
+                end
+                local laser_distance = 0
+                local origin = Cha.Head.CFrame
+                if not light_effects then
+                        direction = (origin * directionOrientation - origin.p).unit
+                end
+                local magic_circle_position = origin.p + direction * GraphicalEffects.LASER_MAGIC_CIRCLE_DISTANCE
+                local magic_circle_cframe = CFrame.new(magic_circle_position, magic_circle_position + direction) * CFrame.Angles(0, 0, math.pi * frame /25)
+                local loop_scale = (laser_scale - 1) / 10
+                for x_offset = -loop_scale, loop_scale, 2 do
+                        for y_offset = -loop_scale, loop_scale, 2 do
+                                local origin_position = magic_circle_cframe * Vector3.new(x_offset, y_offset, 0)
+                                for index = 1, 8 do
+                                        local part, position
+                                        for ray_index = 1, 10 do
+                                                local ray = Ray.new(origin_position + direction * (999 * (ray_index - 1)), direction * 999)
+                                                part, position = Workspace:FindPartOnRay(ray, magic_circle_model)
+                                                if part then
+                                                        break
+                                                end
+                                        end
+                                        if part then
+                                                laser_distance = (position - origin_position).magnitude
+                                                if frame % 8 == 1 and index == 1 then
+                                                        Instance.new("Explosion", Workspace).Position = position
+                                                end
+                                                if not part:IsA("Terrain") then
+                                                        pcall(part.BreakJoints, part)
+                                                        local is_block = part:IsA("Part") and part.Shape == Enum.PartType.Block and part.Name ~= "Base"
+                                                        local mass = part:GetMass()
+                                                        local size = part.Size
+                                                        if (is_block and ((size.X < fragmentation_size and size.Y < fragmentation_size and size.Z <fragmentation_size) or (not part.Anchored and mass < 750))) or (not is_block and mass < 250000) then
+                                                                local part_transparency = math.max(part.Transparency + 0.007 * fragmentation_size, 0.5)
+                                                                if part_transparency >= 0.5 then -- temporarily to minimize debris
+                                                                        pcall(Game.Destroy, part)
+                                                                else
+                                                                        local cframe = part.CFrame
+                                                                        part.Anchored = false
+                                                                        part.BrickColor = BrickColor.new("Medium stone grey")
+                                                                        part.CanCollide = true
+                                                                        if part:IsA("FormFactorPart") then
+                                                                                part.FormFactor = "Custom"
+                                                                        end
+                                                                        part.Size = size - Vector3.new(0.135, 0.135, 0.135) * fragmentation_size
+                                                                        part.Transparency = part_transparency
+                                                                        part.CFrame = cframe + direction * 5
+                                                                        part.Velocity = part.Velocity + direction * 40
+                                                                end
+                                                        elseif is_block then
+                                                                local parts = {part}
+                                                                local model = Instance.new("Model", part.Parent)
+                                                                model.Name = "Fragments"
+                                                                if size.X >= fragmentation_size then
+                                                                        size = Vector3.new(0.5, 1, 1) * size
+                                                                        local archivable = part.Archivable
+                                                                        local cframe = part.CFrame
+                                                                        part.FormFactor = "Custom"
+                                                                        part.Size = size
+                                                                        part.Archivable = true
+                                                                        local part_clone = part:Clone()
+                                                                        part.Archivable = archivable
+                                                                        part_clone.Archivable = archivable
+                                                                        part.CFrame = cframe * CFrame.new(-0.5 * size.X, 0, 0)
+                                                                        part_clone.CFrame = cframe * CFrame.new(0.5 * size.X, 0, 0)
+                                                                        part_clone.Parent = model
+                                                                        parts[2] = part_clone
+                                                                end
+                                                                if size.Y >= fragmentation_size then
+                                                                        size = Vector3.new(1, 0.5, 1) * size
+                                                                        for part_index = 1, #parts do
+                                                                                local part = parts[part_index]
+                                                                                local archivable = part.Archivable
+                                                                                local cframe = part.CFrame
+                                                                                part.FormFactor = "Custom"
+                                                                                part.Size = size
+                                                                                part.Archivable = true
+                                                                                local part_clone = part:Clone()
+                                                                                part.Archivable = archivable
+                                                                                part_clone.Archivable = archivable
+                                                                                part.CFrame = cframe * CFrame.new(0, -0.5 * size.Y, 0)
+                                                                                part_clone.CFrame = cframe * CFrame.new(0, 0.5 * size.Y, 0)
+                                                                                part_clone.Parent = model
+                                                                                table.insert(parts, part_clone)
+                                                                        end
+                                                                end
+                                                                if size.Z >= fragmentation_size then
+                                                                        size = Vector3.new(1, 1, 0.5) * size
+                                                                        for part_index = 1, #parts do
+                                                                                local part = parts[part_index]
+                                                                                local archivable = part.Archivable
+                                                                                local cframe = part.CFrame
+                                                                                part.FormFactor = "Custom"
+                                                                                part.Size = size
+                                                                                part.Archivable = true
+                                                                                local part_clone = part:Clone()
+                                                                                part.Archivable = archivable
+                                                                                part_clone.Archivable = archivable
+                                                                                part.CFrame = cframe * CFrame.new(0, 0, -0.5 * size.Z)
+                                                                                part_clone.CFrame = cframe * CFrame.new(0, 0, 0.5 * size.Z)
+                                                                                part_clone.Parent = model
+                                                                                table.insert(parts, part_clone)
+                                                                        end
+                                                                end
+                                                                for _, part in ipairs(parts) do
+                                                                        part:MakeJoints()
+                                                                end
+                                                        else
+                                                                break
+                                                        end
+                                                end
+                                        else
+                                                laser_distance = 9990
+                                                break
+                                        end
+                                end
+                        end
+                end
+                local laser_cframe = magic_circle_cframe * CFrame.Angles(-0.5 * math.pi, 0, 0)
+                local laser_width = GraphicalEffects.LASER_WIDTH * opacity * laser_scale
+                local laser_mesh_offset = Vector3.new(0, 0.5 * laser_distance, 0)      
+                laser_part.CFrame = laser_cframe
+                if laser_effects then
+                        local laser_effect_data_1, laser_effect_data_2 = laser_effects[1], laser_effects[2]
+                        local laser_effect_1, laser_effect_mesh_1 = laser_effect_data_1[1], laser_effect_data_1[2]
+                        local laser_effect_2, laser_effect_mesh_2 = laser_effect_data_2[1], laser_effect_data_2[2]
+                        laser_effect_1.CFrame = laser_cframe
+                        laser_effect_2.CFrame = laser_cframe
+                        laser_effect_mesh_1.Offset = laser_mesh_offset
+                        laser_effect_mesh_2.Offset = laser_mesh_offset
+                        local game_time = time()
+                        local effect_scale_1 = 0.5 + 0.5 * math.sin(16 * math.pi * game_time)
+                        local effect_scale_2 = 0.5 + 0.5 * math.cos(16 * math.pi * game_time)
+                        laser_effect_mesh_1.Scale = 5 * Vector3.new(laser_width * effect_scale_1, laser_distance, laser_width * effect_scale_1)
+                        laser_effect_mesh_2.Scale = 5 * Vector3.new(laser_width * effect_scale_2, laser_distance, laser_width * effect_scale_2)
+                        laser_width = laser_width * 0.25
+                end
+                laser_mesh.Offset = laser_mesh_offset                  
+                laser_mesh.Scale = 5 * Vector3.new(laser_width, laser_distance, laser_width)
+                magic_circle_part.CFrame = magic_circle_cframe
+                magic_circle_light.Brightness = opacity
+                magic_circle_decal_back.Transparency = transparency
+                magic_circle_decal_front.Transparency = transparency
+                if light_effects then
+                        for index, data in ipairs(laser_lights) do
+                                local laser_spotlight_part, laser_spotlight = data[1], data[2]
+                                local laser_spotlight_offset = 30 * (index - 1)
+                                if laser_spotlight_offset <= laser_distance then
+                                        laser_spotlight_part.CFrame = magic_circle_cframe * CFrame.new(0, 0, -laser_spotlight_offset)
+                                        laser_spotlight.Brightness = opacity
+                                        laser_spotlight.Enabled = true
+                                else
+                                        laser_spotlight.Enabled = false
+                                end
+                        end
+                end
+        end
+end
+
+function GraphicalEffects.ShootLaserOfDeath(target, data)
+        if Cha.Head then
+                data = data or {}
+                local brickcolor = data.brickcolor or BrickColor.new("Really black")
+                local duration = data.duration or 40
+                local fragmentation_size = data.fragmentation_size or 3
+                local laser_scale = data.laser_scale or 1
+                local light_color = data.light_color or Color3.new(1, 0.5, 1)
+                local magic_circle_image = data.magic_circle_image or "rbxassetid://122610943"
+                local magic_circle_scale = data.magic_circle_scale or 1
+                local sound_volume = data.sound_volume or 1 / 3
+                local special_effects = data.special_effects
+                local stay = data.stay or 4
+                local origin = Cha.Head.CFrame
+                local directionOrientation = origin:pointToObjectSpace(target)
+                local direction = (target - origin.p).unit
+                local magic_circle_position = origin.p + direction * GraphicalEffects.LASER_MAGIC_CIRCLE_DISTANCE
+                local magic_circle_cframe = CFrame.new(magic_circle_position, magic_circle_position + direction)
+                local magic_circle_model = Instance.new("Model")
+                local laser_part = Instance.new("Part", magic_circle_model)
+                local laser_mesh = Instance.new("CylinderMesh", laser_part)
+                local magic_circle_part = Instance.new("Part", magic_circle_model)
+                local magic_circle_mesh = Instance.new("BlockMesh", magic_circle_part)
+                local magic_circle_light = Instance.new("PointLight", magic_circle_part)
+                local magic_circle_decal_back = Instance.new("Decal", magic_circle_part)
+                local magic_circle_decal_front = Instance.new("Decal", magic_circle_part)
+                local sound = Instance.new("Sound", magic_circle_part)
+                sound.Pitch = 1.25
+                sound.SoundId = "rbxassetid://2248511"
+                sound.Volume = sound_volume
+                magic_circle_model.Archivable = false
+                laser_part.Anchored = true
+                laser_part.BottomSurface = "Smooth"
+                laser_part.BrickColor = brickcolor
+                laser_part.CanCollide = false
+                laser_part.CFrame = magic_circle_cframe * CFrame.Angles(-0.5 * math.pi, 0, 0)
+                laser_part.FormFactor = "Custom"
+                laser_part.Locked = true
+                laser_part.Size = Vector3.new(0.2, 0.2, 0.2)
+                laser_part.TopSurface = "Smooth"
+                laser_mesh.Offset = Vector3.new(0, 0, 0)
+                laser_mesh.Name = "Mesh"
+                laser_mesh.Scale = 5 * laser_scale * Vector3.new(GraphicalEffects.LASER_WIDTH, 0, GraphicalEffects.LASER_WIDTH)
+                magic_circle_part.Anchored = true
+                magic_circle_part.BottomSurface = "Smooth"
+                magic_circle_part.CanCollide = false
+                magic_circle_part.CFrame = magic_circle_cframe
+                magic_circle_part.FormFactor = "Custom"
+                magic_circle_part.Locked = true
+                magic_circle_part.Size = Vector3.new(0.2, 0.2, 0.2)
+                magic_circle_part.TopSurface = "Smooth"
+                magic_circle_part.Transparency = 1
+                magic_circle_mesh.Scale = Vector3.new(60, 60, 0) * magic_circle_scale
+                magic_circle_light.Color = light_color
+                magic_circle_light.Range = 16 * magic_circle_scale
+                magic_circle_light.Shadows = true
+                magic_circle_decal_back.Face = "Back"
+                magic_circle_decal_back.Texture = magic_circle_image
+                magic_circle_decal_front.Face = "Front"
+                magic_circle_decal_front.Texture = magic_circle_image
+                magic_circle_model.Parent = Workspace
+                local laser_color = brickcolor.Color
+                local laser_lights = {}
+                local light_effects = laser_color.r + laser_color.g + laser_color.b > 0.25
+                if light_effects then
+                        local laser_spotlight_part_template = Instance.new("Part")
+                        local laser_spotlight_light_template = Instance.new("SpotLight", laser_spotlight_part_template)
+                        laser_spotlight_part_template.Anchored = true
+                        laser_spotlight_part_template.Anchored = true
+                        laser_spotlight_part_template.BottomSurface = "Smooth"
+                        laser_spotlight_part_template.CanCollide = false
+                        laser_spotlight_part_template.FormFactor = "Custom"
+                        laser_spotlight_part_template.Locked = true
+                        laser_spotlight_part_template.Size = Vector3.new(0.2, 0.2, 0.2)
+                        laser_spotlight_part_template.TopSurface = "Smooth"
+                        laser_spotlight_part_template.Transparency = 1
+                        laser_spotlight_light_template.Angle = 45
+                        laser_spotlight_light_template.Color = laser_color
+                        laser_spotlight_light_template.Enabled = true
+                        laser_spotlight_light_template.Name = "Light"
+                        laser_spotlight_light_template.Range = 60
+                        for index = 1, 40 do
+                                local laser_spotlight_part = laser_spotlight_part_template:Clone()
+                                laser_spotlight_part.CFrame = magic_circle_cframe * CFrame.new(0, 0, -30 * (index - 1))
+                                laser_spotlight_part.Parent = magic_circle_model
+                                laser_lights[index] = {laser_spotlight_part, laser_spotlight_part.Light}
+                        end
+                end
+                local laser_effects
+                if special_effects then
+                        laser_effects = {}
+                        local laser_effect_1 = laser_part:Clone()
+                        laser_effect_1.BrickColor = special_effects
+                        laser_effect_1.Transparency = 0.5
+                        local laser_effect_2 = laser_effect_1:Clone()
+                        laser_effects[1], laser_effects[2] = {laser_effect_1, laser_effect_1.Mesh}, {laser_effect_2, laser_effect_2.Mesh}
+                        laser_effect_1.Parent = magic_circle_model
+                        laser_effect_2.Parent = magic_circle_model
+                end
+                GraphicalEffects.laser_data[{0, directionOrientation, direction, magic_circle_model, laser_part, laser_mesh, magic_circle_part,magic_circle_light, magic_circle_decal_back, magic_circle_decal_front, sound, laser_scale, fragmentation_size, duration, laser_lights, laser_effects, stay,light_effects}] = true
+        end
+end
+
+ControllerCommands = {};
+
+function ControllerCommands.BigLaser(target)
+        GraphicalEffects.ShootLaserOfDeath(target, {brickcolor = BrickColor.new("New Yeller"), duration = 80, fragmentation_size = 6,laser_scale = 30, light_color = Color3.new(1, 0.5, 0), magic_circle_image = "rbxassetid://126561317", magic_circle_scale = 1.5, sound_volume = 1,special_effects = BrickColor.new("Deep orange"), stay = 2})
+end
+
+function ControllerCommands.MegaLaser(target)
+        GraphicalEffects.ShootLaserOfDeath(target, {brickcolor = BrickColor.new("Really black"), duration = 80, fragmentation_size = 10,laser_scale = 35, light_color = Color3.new(1, 0.5, 0), magic_circle_image = "rbxassetid://126561317", magic_circle_scale = 5.5, sound_volume = 1,special_effects = BrickColor.new("Institutional white"), stay = 2})
+end
+
+--[[
+Before using this, be sure to set chatAdornee to the part you want lasers to fire from.
+let me explain the funcs;
+
+TaskScheduler is a thing gk needs, so it's in.
+GrapicalEffects.SpaceHyperBeam is a function that needs a Vector3 and fires a space laser there
+GraphicalEffects.ShootLaserOfDeath is a function that requires a CFrame and shoots laser there,
+and ControllerCommands.BigLaser(target) is a function that requires a CFrame and shoots a damn big laser there
+]]--
+function GraphicalEffects.MainLoop()
+        RunService.Stepped:wait()
+        for data in pairs(GraphicalEffects.magicCircleData) do
+                GraphicalEffects.AnimateMagicCircle(data)
+        end
+        for data in pairs(GraphicalEffects.laser_data) do
+                GraphicalEffects.AnimateLaserOfDeath(data)
+        end
+        --for data in pairs(GraphicalEffects.missileData) do
+        --        GraphicalEffects.AnimateMissile(data)
+        --end
+end
+TaskScheduler.Start(function()
+        while true do
+                GraphicalEffects.MainLoop()
+        end
+end)
+mouse=plr:GetMouse()
+mouse.KeyDown:connect(function(key)
+key:lower()
+if key == "f"  then
+GraphicalEffects.FireSpaceHyperBeam(mouse.Hit,12,1.5,10,600,20)
+end
+if key == "x"  then
+ControllerCommands.MegaLaser(mouse.Hit.p)
+end
+if key == "c" then
+ControllerCommands.BigLaser(mouse.Hit.p)
+end
+if key == "v"  then
+GraphicalEffects.ShootLaserOfDeath(mouse.Hit.p)
+end
+if key == "m" then
+GraphicalEffects.CrystalRing({base_part = plr.Character['Upper Torso'], crystal_color = BrickColor.new("Really black"), float_duration = 1})
+end
+
+end)

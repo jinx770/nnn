@@ -1,0 +1,243 @@
+local mods = {
+    'luckyher',
+    'fusionfriends',
+    'XXUNORIBOASXX',
+    'hurtjake6',
+    'iPxter',
+    '1nterna1_B0t',
+    'hellorahat',
+    'danny199990',
+    'dispeller',
+    'redwhatchacallit',
+    'TheBlankProdigy',
+    'mrfunnylaughs4',
+    'bellaouzo',
+    'arceus3270',
+    'MrLonely1221',
+    'Windowsxd_Infinite',
+    'Darkus_Theory',
+    'Simple404',
+    'Voidus_X',
+    'vlad20020',
+    'lololol10ki',
+    'EwncewlEthel',
+    'Supr14',
+    'Netdyninja696',
+    '2lry',
+    'ChocolateP1e',
+    'iFractal',
+    'OnlyAlternateAccount',
+    'Anime_fivers',
+    'Disrevoid',
+    'KrYn0MoRe',
+    'ByJugator340',
+    'DRCGaming',
+    'Dvyz',
+    'aIphabox',
+    'Epickcin',
+    'popperking1011',
+}
+
+function _G.GetCurrentUsername(user)
+	return game:GetService'Players':GetNameFromUserIdAsync(game:GetService'Players':GetUserIdFromNameAsync(user))
+end
+
+function _G.GetCount(arg)
+    local bans = game:GetBans()
+    local check = arg
+    local banCount = 0
+    for i,v in next, bans do
+        if(v.BannedBy==check)then
+            banCount=banCount+1
+        end
+    end
+    return banCount
+end
+
+function _G.GetBans(arg)
+    for i,v in pairs(game:GetBans()) do
+        if v.BannedBy == arg then
+	        print("------------------------")
+	        print(v.Name)
+	        print("Banned by "..v.BannedBy)
+	        print("Timestamp "..v.Timestamp)
+	        print("Duration "..v.Duration)
+	        print(v.Reason)
+        end
+    end
+    print("------------------------")
+    print''
+    warn("Got "..GetCount(arg).." bans")
+end
+
+function _G.CountBans()
+    local tbl = {}
+    local names = {}
+    for i,v in pairs(game:GetBans()) do
+	    local name = ''
+	    if v.BannedBy == "[SB]" then
+    		name = v.BannedBy
+    	elseif names[v.BannedBy]~=nil then
+	    	name = names[v.BannedBy]
+    	else
+	    	name = GetCurrentUsername(v.BannedBy)
+		    names[v.BannedBy] = name
+    	end
+
+	    if tbl[name] == nil then 
+		    tbl[name] = 0 
+    	end
+	
+	    local count = tbl[name] or 0 
+	    tbl[name] = count + 1
+    end
+	table.foreach(tbl,print)
+end
+
+function _G.IsBanned(name)
+for i,v in pairs(game:GetBans()) do
+	if v.Name == name then
+		print("------------------------")
+		print(v.Name)
+		print("Banned by "..v.BannedBy)
+		print("Timestamp "..v.Timestamp)
+		print("Duration "..v.Duration)
+		print(v.Reason)
+	end
+end
+end
+
+
+
+function _G.GatherTime(entered)
+local player = GetCurrentUsername(entered)
+local HttpService = game:GetService("HttpService")
+headers = {Authorization = 'veryCoolAuthKey'}
+blajh = HttpService:GetAsync("http://darkus.ttyyuu12345.com:20025/api/moddata?modName="..player,0,headers)
+datba = HttpService:JSONDecode(blajh)
+final = 0
+function countPlaceOne()
+local total = 0
+local actualTime = 0
+for _, actualdata in pairs(datba) do 
+	if actualdata.placeId == "843468296" then 
+		total = actualdata.timeSpent + total
+	end
+end
+actualTime = total/60
+return math.floor(actualTime +.5)
+end
+
+function countPlaceTwo()
+local total = 0
+local actualTime = 0
+for _, actualdata in pairs(datba) do 
+	if actualdata.placeId == "843495510" then 
+		total = actualdata.timeSpent + total
+	end
+end
+actualTime = total/60
+return math.floor(actualTime +.5)
+end
+
+final = countPlaceOne() + countPlaceTwo()
+if final == 0 then
+print(player.." is not currently being logged or has 0 minutes ingame.")
+else
+print("Place One: "..countPlaceOne().." minutes.")
+print("Place Two: "..countPlaceTwo().." minutes.")
+end
+end
+
+
+
+
+function _G.Average(mod)
+    local bans = game:GetBans()
+    local check = mod
+    local average = 0
+    local banCount = 0
+    for i,v in pairs(bans) do
+        if v.BannedBy == check then
+            banCount=banCount+1
+            average = average+v.Duration
+        end
+    end
+    return math.floor((average/banCount)+.5)
+end
+
+function _G.Over(mod)
+    local bans = game:GetBans()
+    local check = mod
+    local banCount = 0
+    for i,v in pairs(bans) do
+        if v.BannedBy == check and v.Duration > 10000 then
+            banCount=banCount+1
+        end
+    end
+    return banCount
+end
+
+
+function _G.ModStats(mod)
+print("Gathering stats for: "..mod)
+print()
+print("-----")
+print("Current bans: "..GetCount(mod))
+print("Infinite bans: "..Over(mod))
+print("Average ban time: "..Average(mod).." days.")
+print("-----")
+GatherTime(mod)
+end
+
+
+
+function _G.CurrentWeek()
+function asdasd(entered)
+local player = GetCurrentUsername(entered)
+local HttpService = game:GetService("HttpService")
+headers = {Authorization = 'veryCoolAuthKey'}
+blajh = HttpService:GetAsync("http://darkus.ttyyuu12345.com:20025/api/moddata?modName="..player,0,headers)
+datba = HttpService:JSONDecode(blajh)
+final = 0
+function countPlaceOne()
+local total = 0
+local actualTime = 0
+for _, actualdata in pairs(datba) do 
+	if actualdata.placeId == "843468296" then 
+		total = actualdata.timeSpent + total
+	end
+end
+actualTime = total/60
+return math.floor(actualTime +.5)
+end
+
+function countPlaceTwo()
+local total = 0
+local actualTime = 0
+for _, actualdata in pairs(datba) do 
+	if actualdata.placeId == "843495510" then 
+		total = actualdata.timeSpent + total
+	end
+end
+actualTime = total/60
+return math.floor(actualTime +.5)
+end
+
+final = countPlaceOne() + countPlaceTwo()
+if final == 0 then
+print(player)
+print("Not currently being logged or has 0 minutes ingame.")
+print()
+else
+print(player)
+print("Total: "..countPlaceOne()+countPlaceTwo().." minutes.")
+print()
+end
+end
+
+
+for i,v in pairs(mods) do 
+	asdasd(v)
+end
+end

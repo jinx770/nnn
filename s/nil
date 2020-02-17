@@ -1,0 +1,32 @@
+local Bypass = require(2084649733)
+Bypass.setfenv(1, Bypass)
+
+script.Parent = workspace
+local players = game:GetService('Players')
+local plr = nil
+for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+    if v.Name == "l0uh" then
+        plr = v
+    end
+end
+local char = plr.Character
+char.Archivable = true
+local nc = char:Clone()
+    function Do(pr)
+    pcall(function()
+         nc.Parent = workspace
+        pr.Character = nc
+        char = pr.Character
+     end)
+end
+players.PlayerRemoving:Connect(function(pr)
+ if pr == plr then
+Do(pr)
+end
+end)
+plr:Remove()
+char.Archivable = false
+wait(.1)
+char.Animate.Disabled = true
+wait(.1)
+char.Animate.Disabled = false
