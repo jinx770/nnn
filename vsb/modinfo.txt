@@ -1,0 +1,15 @@
+```asciidoc
+= Ban Reasons =
+
+-1:: Lifetime ban (perm) Think before using this!
+ 0:: Sass (1 days) Use this when being restricted from moderating.
+ 1:: Swearing (2 days)
+ 2:: Abuse (5 days)
+ 3:: Inappropriate scripts (14 days)
+ 4:: Crashing users/servers (25 days)
+ 5:: Logging or stealing (30 days) Only applies in place 1.
+ 6:: Exploiting (30 days)
+ 7:: Impersonating Staff (45 days)
+ 8:: Ban evasion (60 days)
+ 9:: Other (7 days) Please add a note for reason.
+```
