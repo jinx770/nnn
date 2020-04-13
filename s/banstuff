@@ -181,16 +181,22 @@ end
 
 function _G.ModStats(mod)
 print("Gathering stats for: "..mod)
-print()
-print("-----")
+print("")
 print("Current bans: "..GetCount(mod))
 print("Infinite bans: "..Over(mod))
 print("Average ban time: "..Average(mod).." days.")
-print("-----")
-GatherTime(mod)
+print()
+print("---------------------------------------------------------")
+print()
 end
 
-
+trials = {"NathanR_RBLX","bath1299","YM_DarkNick","AmokahTheFox"}
+function _G.TrialMods()
+print()
+for i,v in pairs(trials) do 
+	ModStats(v)
+end
+end
 
 function _G.CurrentWeek()
 function asdasd(entered)
