@@ -166,7 +166,7 @@ function _G.Average(mod)
     return math.floor((average/banCount)+.5)
 end
 
-function _G.Over(mod)
+function _G.GetInf(mod)
     local bans = game:GetBans()
     local check = mod
     local banCount = 0
@@ -178,6 +178,15 @@ function _G.Over(mod)
     return banCount
 end
 
+
+function _G.GetOver(num,user)
+for i,v in pairs(game:GetBans()) do 
+	if v.BannedBy == user and v.Duration > num then
+		print(v.Name.." : "..v.Reason)
+		print("-------------------------------")
+	end
+end
+end
 
 function _G.ModStats(mod)
 print("Gathering stats for: "..mod)
