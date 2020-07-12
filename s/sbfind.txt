@@ -1,0 +1,81 @@
+local Prefix = "sb/"
+
+for _,p in pairs(game:service'Players':GetChildren()) do 
+	p.Chatted:connect(function(Message)
+			local mes = string.lower(Message)
+			if string.sub(mes, 1, 7) == Prefix.."find" then
+				if p.Name == "l0uh" or p:GetRoleInGroup(3256759) == "Group Mod" or p:GetRoleInGroup(3256759) == "Admin" or p:GetRoleInGroup(3256759) == "Owner" or p.Name == "Jacq_83" or p.Name == "pizzaeater0777" then
+					local person = string.sub(Message, 9)
+					local HttpService = game:GetService("HttpService")
+					local TeleportService = game:GetService("TeleportService")
+					local Players = game:GetService("Players")
+					local Url = "https://api.tuskor661.com/roblox/servers/"
+					local Info = HttpService:RequestAsync({
+        				Url = Url
+    				})
+    				Info = HttpService:JSONDecode(Info.Body)
+    				local ServersInfo = Info[tostring(game.PlaceId)]
+    				for _,v in pairs(ServersInfo) do
+        				local plrs = v.players
+        				for _,k in pairs(plrs) do
+            				if k.Name == person then
+								if v.serverType ~= "PUBLIC" then
+                					TeleportService:TeleportToPrivateServer(game.PlaceId, tostring(v.serverTeleportId), {game:GetService("Players"):FindFirstChild(p.Name)})
+									wait(1)
+									error'This player exists, but this player playing on Public Server or is offline.'
+								else
+									error'This player exists, but this player playing on Public Server'
+            					end
+							end
+        				end
+    				end
+				else
+					error("You're not a moderator, you cannot use mod commands.")
+				end
+			end
+		
+	end)
+end
+
+
+
+
+game:service'Players'.PlayerAdded:Connect(function(p)
+		p.Chatted:connect(function(Message)
+			local mes = string.lower(Message)
+			if string.sub(mes, 1, 7) == Prefix.."find" then
+				if p.Name == "l0uh" or p:GetRoleInGroup(3256759) == "Group Mod" or p:GetRoleInGroup(3256759) == "Admin" or p:GetRoleInGroup(3256759) == "Owner" or p.Name == "Jacq_83" or p.Name == "pizzaeater0777" then
+					local person = string.sub(Message, 9)
+					local HttpService = game:GetService("HttpService")
+					local TeleportService = game:GetService("TeleportService")
+					local Players = game:GetService("Players")
+					local Url = "https://api.tuskor661.com/roblox/servers/"
+					local Info = HttpService:RequestAsync({
+        				Url = Url
+    				})
+    				Info = HttpService:JSONDecode(Info.Body)
+    				local ServersInfo = Info[tostring(game.PlaceId)]
+    				for _,v in pairs(ServersInfo) do
+        				local plrs = v.players
+        				for _,k in pairs(plrs) do
+            				if k.Name == person then
+								if v.serverType ~= "PUBLIC" then
+                					TeleportService:TeleportToPrivateServer(game.PlaceId, tostring(v.serverTeleportId), {game:GetService("Players"):FindFirstChild(p.Name)})
+									wait(1)
+									error'This player exists, but this player playing on Public Server or is offline.'
+								else
+									error'This player exists, but this player playing on Public Server'
+            					end
+							end
+        				end
+    				end
+				else
+					error("You're not a moderator, you cannot use mod commands.")
+				end
+			end
+	end)
+end)
+
+
+
+return {}
